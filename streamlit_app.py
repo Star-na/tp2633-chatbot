@@ -246,7 +246,7 @@ def rule_based(user_text: str):
     if "student card" in t or "matric card" in t or "id card" in t:
         return "student_card", random.choice(INTENTS["student_card"]["responses"]), 0.99
     if "portal" in t:
-    return "contact_admin", random.choice(INTENTS["contact_admin"]["responses"]), 0.90
+        return "contact_admin", random.choice(INTENTS["contact_admin"]["responses"]), 0.90
     if "lab" in t:
         return "lab_access", random.choice(INTENTS["lab_access"]["responses"]), 0.99
     if "advisor" in t or "course" in t or "add drop" in t or "graduation" in t:
