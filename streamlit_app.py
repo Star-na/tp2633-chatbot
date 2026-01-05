@@ -8,13 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 
-# =========================
-# 1) FTSM Domain: University FAQ intents (>=20 examples each)
-# =========================
 INTENTS = {
-    # -------------------------
-    # Common intents
-    # -------------------------
     "greet": {
         "examples": [
             "hi", "hello", "hey", "good morning", "good evening",
@@ -63,9 +57,6 @@ INTENTS = {
         ]
     },
 
-    # -------------------------
-    # FTSM / UKM specific intents
-    # -------------------------
     "ukmfolio_lms": {
         "examples": [
             "how to access ukmfolio", "ukmfolio login", "cannot login ukmfolio", "ukmfolio not loading", "ukmfolio down",
@@ -96,7 +87,7 @@ INTENTS = {
             "exam rules", "exam guideline", "exam regulations", "exam entry requirement", "exam attendance"
         ],
         "responses": [
-            "Exam timetable/venue is usually published on the SMP. "
+            "Exam timetable/venue is usually published on SMP. Please check the Examination/Timetable section in SMP for the latest updates."
         ]
     },
     "lab_access": {
@@ -143,232 +134,4 @@ INTENTS = {
             "If you lost your student card, report it and apply for replacement at the student service counter/admin. Bring identification and follow the official replacement procedure (may include a replacement fee)."
         ]
     },
-   "academic_advisor": {
-    "examples": [
-        "who is my academic advisor", "meet academic advisor", "how to contact advisor", "ftsm academic advisor", "program advisor",
-        "need course advice", "course registration help", "advisor consultation", "advisor email", "advisor office hours",
-        "how to change course", "drop course advice", "add course advice", "credit hour advice", "study plan advice",
-        "program structure", "graduation requirement", "advisor appointment", "who to ask about course", "academic counselling", "need academic help"
-    ],
-    "responses": [
-        "For academic matters (course planning, add/drop, graduation requirements), use SMP. You can usually find advisor info on faculty pages or via your program coordinator."
-    ]
-},
-    "internship_fyp": {
-        "examples": [
-            "fyp registration", "final year project", "how to start fyp", "choose fyp supervisor", "fyp supervisor",
-            "internship application", "industrial training", "internship requirements", "internship report", "li placement",
-            "fyp proposal", "fyp timeline", "fyp deliverables", "fyp meeting", "how to submit fyp report",
-            "internship duration", "internship logbook", "internship evaluation", "fyp presentation", "fyp marking", "li briefing"
-        ],
-        "responses": [
-            "For Internship (Industrial Training) / FYP: requirements and timelines are set by your program/department. Check official briefing notes and announcements. "
-        ]
-    },
-    "contact_admin": {
-        "examples": [
-            "where is admin office", "ftsm admin contact", "who to contact for admin", "student affairs office", "office location",
-            "how to update personal details", "change phone number", "update address", "update email", "change name in record",
-            "request letter", "support letter", "verification letter", "student confirmation letter", "academic letter request",
-            "complaint", "submit request", "counter service hours", "when is counter open", "admin email", "call admin"
-        ],
-        "responses": [
-            "For admin requests (letters, profile update, general inquiries), contact the faculty/student service counter during office hours or use the official email/phone listed by FTSM/UKM."
-        ]
-    }
-}
-
-FALLBACKS = [
-    "Sorry, I’m not sure I understand. Can you rephrase your question?",
-    "I didn’t catch that. Could you ask in another way?",
-    "I can help with UKMFolio/LMS, timetable, exams, labs, WiFi/eduroam, fees, student card, and admin services."
-]
-
-
-# =========================
-# 2) Preprocessing
-# =========================
-def preprocess(text: str) -> str:
-    text = text.lower().strip()
-    text = re.sub(r"[^a-z0-9\s]", " ", text)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
-
-
-# =========================
-# 3) Build intent classifier (TF-IDF + Logistic Regression)
-# =========================
-def build_model(intents_dict):
-    X, y = [], []
-    for intent, item in intents_dict.items():
-        for ex in item["examples"]:
-            X.append(preprocess(ex))
-            y.append(intent)
-
-    vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
-    X_vec = vectorizer.fit_transform(X)
-
-    clf = LogisticRegression(max_iter=2000, class_weight="balanced")
-    clf.fit(X_vec, y)
-    return vectorizer, clf
-
-
-VECTORIZER, CLF = build_model(INTENTS)
-
-
-# =========================
-# 4) Dialog Management (Hybrid: rules + ML + fallback)
-# =========================
-def rule_based(user_text: str):
-    t = preprocess(user_text)
-
-    # very short common messages
-    if t in {"hi", "hello", "hey", "hai", "hye"}:
-        return "greet", random.choice(INTENTS["greet"]["responses"]), 1.0
-    if t in {"bye", "goodbye", "exit", "quit", "stop"}:
-        return "bye", random.choice(INTENTS["bye"]["responses"]), 1.0
-    if t in {"thanks", "thank you", "tq", "thx", "ty"}:
-        return "thanks", random.choice(INTENTS["thanks"]["responses"]), 1.0
-    if t in {"help", "menu", "commands", "faq list", "show options"}:
-        return "help", random.choice(INTENTS["help"]["responses"]), 1.0
-
-    # keyword safeguards for FAQ (avoid fallback)
-    if "ukmfolio" in t or "lms" in t:
-        return "ukmfolio_lms", random.choice(INTENTS["ukmfolio_lms"]["responses"]), 0.99
-    if "timetable" in t or "schedule" in t:
-        return "timetable", random.choice(INTENTS["timetable"]["responses"]), 0.99
-    if "exam" in t:
-        return "exam_schedule", random.choice(INTENTS["exam_schedule"]["responses"]), 0.99
-    if "eduroam" in t or "wifi" in t or "internet" in t:
-        return "wifi_eduroam", random.choice(INTENTS["wifi_eduroam"]["responses"]), 0.99
-    if "fee" in t or "fees" in t or "yuran" in t or "payment" in t:
-        return "fees_payment", random.choice(INTENTS["fees_payment"]["responses"]), 0.99
-    if "student card" in t or "matric card" in t or "id card" in t:
-        return "student_card", random.choice(INTENTS["student_card"]["responses"]), 0.99
-    if "portal" in t:
-        return "contact_admin", random.choice(INTENTS["contact_admin"]["responses"]), 0.90
-    if "lab" in t:
-        return "lab_access", random.choice(INTENTS["lab_access"]["responses"]), 0.99
-    if "advisor" in t or "course" in t or "add drop" in t or "graduation" in t:
-        return "academic_advisor", random.choice(INTENTS["academic_advisor"]["responses"]), 0.90
-    if "fyp" in t or "final year project" in t or "internship" in t or "industrial training" in t or "logbook" in t:
-        return "internship_fyp", random.choice(INTENTS["internship_fyp"]["responses"]), 0.90
-    if "admin" in t or "counter" in t or "letter" in t:
-        return "contact_admin", random.choice(INTENTS["contact_admin"]["responses"]), 0.90
-
-    return None, None, 0.0
-
-
-def ml_predict(user_text: str):
-    t = preprocess(user_text)
-    vec = VECTORIZER.transform([t])
-    proba = CLF.predict_proba(vec)[0]
-    classes = CLF.classes_
-    best_idx = int(proba.argmax())
-    intent = str(classes[best_idx])
-    conf = float(proba[best_idx])
-    return intent, conf
-
-
-def get_response(user_text: str, threshold: float = 0.25):
-    intent, resp, conf = rule_based(user_text)
-    if intent:
-        return intent, resp, conf
-
-    intent, conf = ml_predict(user_text)
-    if conf < threshold:
-        return "fallback", random.choice(FALLBACKS), conf
-
-    resp = random.choice(INTENTS[intent]["responses"])
-    return intent, resp, conf
-
-
-# =========================
-# 5) Evaluation utilities
-# =========================
-def build_testset():
-    rows = []
-    for intent, item in INTENTS.items():
-        for ex in item["examples"]:
-            rows.append({"text": ex, "true_intent": intent})
-    return pd.DataFrame(rows)
-
-
-def evaluate_model(threshold: float):
-    df = build_testset()
-
-    preds = []
-    confs = []
-    for t in df["text"]:
-        pred_intent, conf = ml_predict(t)
-        if conf < threshold:
-            preds.append("fallback")
-        else:
-            preds.append(pred_intent)
-        confs.append(conf)
-
-    df["pred_intent"] = preds
-    df["confidence"] = confs
-
-    acc_all = accuracy_score(df["true_intent"], df["pred_intent"])
-
-    df_nofb = df[df["pred_intent"] != "fallback"].copy()
-    acc_no_fallback = accuracy_score(df_nofb["true_intent"], df_nofb["pred_intent"]) if len(df_nofb) else 0.0
-
-    labels = sorted(df["true_intent"].unique().tolist())
-    cm = confusion_matrix(df["true_intent"], df["pred_intent"], labels=labels)
-    cm_df = pd.DataFrame(cm, index=labels, columns=labels)
-
-    return df, acc_all, acc_no_fallback, cm_df
-
-
-# =========================
-# 6) Streamlit UI
-# =========================
-st.set_page_config(page_title="FTSM FAQ Chatbot", page_icon="🎓", layout="centered")
-
-st.title("🎓 FTSM FAQ Chatbot (TP2633)")
-st.caption("Hybrid Dialog System: Rule-based + ML Intent Classification (TF-IDF + Logistic Regression)")
-
-page = st.sidebar.radio("Page", ["Chatbot", "Evaluation", "How to Customize"])
-threshold = st.sidebar.slider("Confidence threshold", 0.10, 0.90, 0.25, 0.05)
-
-if "history" not in st.session_state:
-    st.session_state.history = []
-
-if page == "Chatbot":
-    st.subheader("Chat")
-    if st.sidebar.button("Clear chat"):
-        st.session_state.history = []
-
-    for role, msg in st.session_state.history:
-        with st.chat_message(role):
-            st.write(msg)
-
-    user_input = st.chat_input("Ask a FTSM/UKM university FAQ question...")
-    if user_input:
-        st.session_state.history.append(("user", user_input))
-
-        intent, reply, conf = get_response(user_input, threshold=threshold)
-        bot_msg = f"{reply}\n\n_(intent: {intent}, confidence: {conf:.2f})_"
-
-        st.session_state.history.append(("assistant", bot_msg))
-        with st.chat_message("assistant"):
-            st.write(bot_msg)
-
-elif page == "Evaluation":
-    st.subheader("Evaluation (Intent Classification)")
-    df, acc_all, acc_no_fallback, cm_df = evaluate_model(threshold)
-
-    st.write(f"**Accuracy (all samples, fallback as label):** {acc_all:.2f}")
-    st.write(f"**Accuracy (excluding fallback predictions):** {acc_no_fallback:.2f}")
-    st.caption("Tip: More examples per intent usually improve accuracy and reduce fallback.")
-
-    st.write("### Confusion Matrix (ML predictions)")
-    st.dataframe(cm_df)
-
-    st.write("### Test Set Predictions")
-    st.dataframe(df)
-
-
-    )
+    "academic_ad
