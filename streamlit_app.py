@@ -77,17 +77,6 @@ INTENTS = {
             "For UKMFolio/LMS: log in with your UKM credentials, then go to 'My courses'. For submission, open the course → Assignment/Quiz → Submit. If the page fails, try refresh, different browser, or clear cache."
         ]
     },
-    "portal_login": {
-        "examples": [
-            "how to login portal", "ftsm portal login", "student portal login", "cannot access portal", "portal not working",
-            "portal username password", "forgot portal password", "reset portal password", "portal account locked", "portal keeps logging out",
-            "where is student portal", "portal link for ukm", "portal error", "portal shows wrong password", "portal cannot open",
-            "update profile in portal", "change phone number portal", "change email portal", "portal maintenance", "portal login failed"
-        ],
-        "responses": [
-            "For student portal login, use your UKM student credentials. If you forget your password or the account is locked, use the portal reset option or contact the IT/helpdesk for recovery."
-        ]
-    },
     "timetable": {
         "examples": [
             "how to check my timetable", "how do i check my timetable", "where can i see my timetable", "check timetable", "class timetable",
@@ -107,7 +96,7 @@ INTENTS = {
             "exam rules", "exam guideline", "exam regulations", "exam entry requirement", "exam attendance"
         ],
         "responses": [
-            "Exam timetable/venue is usually published on the official portal/announcement. Check the Examination section and search by semester/program. If you share the course code, I can suggest what to look for."
+            "Exam timetable/venue is usually published on the SMP. "
         ]
     },
     "lab_access": {
@@ -162,7 +151,7 @@ INTENTS = {
             "program structure", "graduation requirement", "advisor appointment", "who to ask about course", "academic counselling", "need academic help"
         ],
         "responses": [
-            "For academic matters (course planning, add/drop, graduation requirements), contact your program’s academic advisor. You can usually find advisor info on faculty pages or via your program coordinator."
+            "For academic matters (course planning, add/drop, graduation requirements), using SMP.You can usually find advisor info on faculty pages or via your program coordinator.""
         ]
     },
     "internship_fyp": {
@@ -173,7 +162,7 @@ INTENTS = {
             "internship duration", "internship logbook", "internship evaluation", "fyp presentation", "fyp marking", "li briefing"
         ],
         "responses": [
-            "For Internship (Industrial Training) / FYP: requirements and timelines are set by your program/department. Check official briefing notes and announcements. If you tell me FYP/LI and your semester, I can suggest what documents to prepare."
+            "For Internship (Industrial Training) / FYP: requirements and timelines are set by your program/department. Check official briefing notes and announcements. "
         ]
     },
     "contact_admin": {
