@@ -143,17 +143,17 @@ INTENTS = {
             "If you lost your student card, report it and apply for replacement at the student service counter/admin. Bring identification and follow the official replacement procedure (may include a replacement fee)."
         ]
     },
-    "academic_advisor": {
-        "examples": [
-            "who is my academic advisor", "meet academic advisor", "how to contact advisor", "ftsm academic advisor", "program advisor",
-            "need course advice", "course registration help", "advisor consultation", "advisor email", "advisor office hours",
-            "how to change course", "drop course advice", "add course advice", "credit hour advice", "study plan advice",
-            "program structure", "graduation requirement", "advisor appointment", "who to ask about course", "academic counselling", "need academic help"
-        ],
-        "responses": [
-            "For academic matters (course planning, add/drop, graduation requirements), using SMP.You can usually find advisor info on faculty pages or via your program coordinator.""
-        ]
-    },
+   "academic_advisor": {
+    "examples": [
+        "who is my academic advisor", "meet academic advisor", "how to contact advisor", "ftsm academic advisor", "program advisor",
+        "need course advice", "course registration help", "advisor consultation", "advisor email", "advisor office hours",
+        "how to change course", "drop course advice", "add course advice", "credit hour advice", "study plan advice",
+        "program structure", "graduation requirement", "advisor appointment", "who to ask about course", "academic counselling", "need academic help"
+    ],
+    "responses": [
+        "For academic matters (course planning, add/drop, graduation requirements), use SMP. You can usually find advisor info on faculty pages or via your program coordinator."
+    ]
+},
     "internship_fyp": {
         "examples": [
             "fyp registration", "final year project", "how to start fyp", "choose fyp supervisor", "fyp supervisor",
@@ -246,7 +246,7 @@ def rule_based(user_text: str):
     if "student card" in t or "matric card" in t or "id card" in t:
         return "student_card", random.choice(INTENTS["student_card"]["responses"]), 0.99
     if "portal" in t:
-        return "portal_login", random.choice(INTENTS["portal_login"]["responses"]), 0.99
+    return "contact_admin", random.choice(INTENTS["contact_admin"]["responses"]), 0.90
     if "lab" in t:
         return "lab_access", random.choice(INTENTS["lab_access"]["responses"]), 0.99
     if "advisor" in t or "course" in t or "add drop" in t or "graduation" in t:
