@@ -71,19 +71,6 @@ INTENTS = {
             "For UKMFolio/LMS: log in with your UKM credentials, then go to 'My courses'. For submission, open the course → Assignment/Quiz → Submit. If the page fails, try refresh, different browser, or clear cache."
         ]
     },
-
-    "portal_login": {
-        "examples": [
-            "how to login portal", "ftsm portal login", "student portal login", "cannot access portal", "portal not working",
-            "portal username password", "forgot portal password", "reset portal password", "portal account locked", "portal keeps logging out",
-            "where is student portal", "portal link for ukm", "portal error", "portal shows wrong password", "portal cannot open",
-            "update profile in portal", "change phone number portal", "change email portal", "portal maintenance", "portal login failed"
-        ],
-        "responses": [
-            "For portal login issues, use your UKM student credentials. If you forgot the password or the account is locked, use the password reset option or contact IT/helpdesk."
-        ]
-    },
-
     "timetable": {
         "examples": [
             "how to check my timetable", "how do i check my timetable", "where can i see my timetable", "check timetable", "class timetable",
@@ -92,7 +79,7 @@ INTENTS = {
             "timetable not updated", "timetable changed", "where to view schedule", "how to see class time", "today class schedule"
         ],
         "responses": [
-            "To check your timetable, open the student portal/academic system → Timetable/Schedule → select semester and your registered courses. You can screenshot or print it from there."
+            "To check your timetable, open the SMP system or Folio in the course. "
         ]
     },
 
