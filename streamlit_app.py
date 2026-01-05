@@ -195,10 +195,12 @@ def preprocess(text: str) -> str:
     text = re.sub(r"[^a-z0-9\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
 
-    # small typo tolerance for common words
-    text = text.replace("exa m", "exam")
-    text = text.replace("exa", "exam")
+    # typo tolerance (word-level only; won't break "example"/"exact")
+    text = re.sub(r"\bexa\s*m\b", "exam", text)   # "exa m" -> "exam"
+    text = re.sub(r"\bexa\b", "exam", text)       # "exa" (standalone) -> "exam"
+
     return text
+
 
 
 # =========================
@@ -251,7 +253,7 @@ def rule_based(user_text: str):
     if "student card" in t or "matric card" in t or "id card" in t:
         return "student_card", random.choice(INTENTS["student_card"]["responses"]), 0.99
     if "portal" in t:
-        return "portal_login", random.choice(INTENTS["portal_login"]["responses"]), 0.99
+        return "contact_admin", random.choice(INTENTS["contact_admin"]["responses"]), 0.90
     if "lab" in t:
         return "lab_access", random.choice(INTENTS["lab_access"]["responses"]), 0.99
     if "advisor" in t or "add drop" in t or "graduation" in t or "study plan" in t:
