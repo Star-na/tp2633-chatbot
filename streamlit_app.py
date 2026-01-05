@@ -370,17 +370,5 @@ elif page == "Evaluation":
     st.write("### Test Set Predictions")
     st.dataframe(df)
 
-elif page == "How to Customize":
-    st.subheader("How to Customize for FTSM FAQ")
-    st.markdown(
-        """
-**1) Update responses to match official info**
-- Replace generic responses with FTSM official links/contacts (if available).
 
-**2) Add more intents**
-- Registration / Add-Drop, Hostel, Transport, Facilities, Club activities, etc.
-
-**3) Evaluation screenshots**
-- Take screenshots of accuracy + confusion matrix + prediction table for your report.
-        """
     )
